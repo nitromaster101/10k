@@ -1,0 +1,210 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="reset.css">
+  	<link rel="stylesheet" href="core.css"> 
+  	<script type="text/javascript" src="swfobject.js"></script>
+  	<script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.2.min.js"></script>
+  	<script type="text/javascript">
+  	  $(document).ready(function() {
+  	    mapping = {};
+  	    setup = {};
+  	    maxmap = 0;
+  	    var rtimer = null;
+  	    $(window).resize(function(ev) {
+  	      if(rtimer) clearTimeout(rtimer);
+  	      rtimer = setTimeout(resize, 100)
+  	    });
+  	    var ltimer = null;
+  	    loadtimer();
+  	    $("a[href=#play]").click(function() {
+  	      play = !play;
+  	      console.debug("begin play?", play);
+          ppdraw();
+  	    });
+  	    $("#cover").live("click", function() {
+  	      $("#search").hide();
+  	      $("#cover").hide();
+  	    })
+  	    t = $("#t")[0].getContext("2d");
+  	    pp = $("#pp")[0].getContext("2d");
+  	    play = false;
+  	    resize();
+  	    $("#s").focus();
+  			$("form").submit(function(a, b) {
+  				q = escape($("#s")[0].value);
+  				url = "http://gdata.youtube.com/feeds/api/videos?q=" + q + "&start-index=11&max-results=1&v=2&fields=entry&alt=json-in-script&callback=go&orderby=viewCount"
+  				console.debug($("#s"), q);
+
+  				$("head").append("\<script type=\"text/javascript\" src=\"" + url +"\"\>\</script\>");
+  				$("#results").text("waiting...");
+  				return false;
+  			});
+  			$("#s").val("telephone");
+  			$("form").submit();
+  	  });
+  	  function loadtimer() {
+  	    for(elem in mapping) {
+  	      if(setup[elem]) {
+  	        $("#"+elem).siblings("span").children("span").text($("#" + elem)[0].getVideoBytesLoaded() + "/" + $("#" + elem)[0].getVideoBytesTotal());
+  	      }
+  	    }
+  	    setTimeout(loadtimer, 100);
+  	  }
+  	  function resize() {
+  	    w = $(window).width();
+  	    h = $(window).height();
+  	    $("#t").attr("width", parseInt(.7 * w)).attr("height", parseInt(.076 * h));
+  	    $("#pp").attr("width", 2*parseInt(.005 * w)+0.076*h/3).attr("height", parseInt(.076 * h));
+  	    $("#cont").css("left", parseInt(.5 * (w-$("#cont").width())));
+  	    tdraw();
+  	    ppdraw();
+	    }
+	    function tdraw() {
+	      me = $("#t");
+	      w = me.width();
+	      h = me.height();
+	      t.clearRect(0, 0, w, h);
+        
+
+        t.beginPath();
+	      for(x=.5; x<w; x+=10) {
+	        t.moveTo(x, 0);
+	        t.lineTo(x, h);
+	      }
+	      t.strokeStyle="#eee";
+	      t.stroke();
+	      
+	      
+      }
+    function ppdraw() {
+      o = $("#pp").height()/5;
+      s = parseInt(0.005*w);
+      
+      pp.clearRect(0, 0, $("#pp").width(), $("#pp").height());
+      
+      pp.fillStyle = "black";
+      pp.strokeStyle="#eee";
+      myh = $("#pp").height();
+      myw = $("#pp").width();
+      if(play) {
+        o = 5;
+        s = 3;
+        // draw pause button
+        pp.fillRect(o, myh/4, (myw-2*o-s)/2, myh/2);
+        pp.fillRect((o+s + (myw-2*o-s)/2), myh/4, (myw-2*o-s)/2, myh/2);
+      }
+      else {
+        pp.beginPath();
+        pp.moveTo(s,o);
+        pp.lineTo(s,h-o);
+        pp.lineTo(parseInt(s+h/3),parseInt(h/2));
+        pp.lineTo(s,o);
+        pp.stroke();
+        pp.fill();
+        pp.closePath();
+      }
+    }
+    
+    function add() {
+      $("#cover").show();
+      $("#search").show();
+    }
+    
+    function pause(pid) {
+      $("#" + pid)[0].pauseVideo();
+    }
+    
+    function vplay(pid) {
+      $("#" + pid)[0].playVideo();
+    }
+    
+    function addvideo(vid) {
+      console.debug(vid, "chosen");
+      $("#cover").hide();
+      $("#search").hide();
+      var params = {allowScriptAccess: "always"};
+      var n = "fix" + maxmap;
+      maxmap += 1;
+      mapping[n] = vid;
+      var atts = {id: n};
+      $("#f").append("<div class=\"v\"><div id='fixph'></div><span><a href='javascript:pause(\"" + n + "\");'>pause</a><a href='javascript:vplay(\"" + n + "\");'>play</a><span class=\"bl\">0</span></span></div>");
+      swfobject.embedSWF("http://www.youtube.com/apiplayer?enablejsapi=1&playerapiid=" + n, 
+                             "fixph", "200", "200", "8", null, null, params, atts);
+    }
+    function onYouTubePlayerReady(playerId) {
+      if(playerId.indexOf("fix") == 0) {
+        console.debug("trying to play", playerId);
+  			$("#" + playerId)[0].loadVideoById(mapping[playerId], 0, "small");
+  			setup[playerId] = true;
+  			//document.getElementById(playerId).pauseVideo();
+  		}
+		}
+    
+    function what() {
+      $("#sv").hide();
+      $("#wh").toggle("slow");
+    }
+    function save() {
+      $("#wh").hide();
+      $("#sv").toggle("slow");
+    }
+    var m_s = new Array("January", "February", "March", 
+		"April", "May", "June", "July", "August", "September", 
+		"October", "November", "December");
+		function go(root) {
+			$("#results").html("");
+			var entries = root.feed.entry;
+			console.debug(root.feed);
+			for(entry in entries) {
+				e = entries[entry];
+				d = $("<div class=\"ch\"></div>");
+				console.debug(e.id.$t);
+				d.append("<h3>" + e.title.$t + "</h3>");
+				s = parseInt(e.media$group.yt$duration.seconds);
+				r = s%60;
+				d.append("<span>" + parseInt(s/60) + ":" + (r<10?"0"+r:r) + "</span>");
+				ds = e.media$group.yt$uploaded.$t;
+				q = ds.split("T")
+				console.debug("parse", q[0] + " " + q[1].split(".")[0]);
+				var date = new Date(q[0] + " " + q[1].split(".")[0]);
+				if(isNaN(date.getTime())) {
+				  console.debug("new parse");
+				  date = new Date(Date.parse(ds));
+				}
+				console.debug(date);
+				d.append(" <span>" + m_s[date.getMonth()] + " " + date.getDay() + ", " + date.getFullYear() + "</span>");
+				var a = e.author[0]
+				d.append(" <span>" + a.name.$t + "</span>");
+				d.append("<a href='javascript:document.getElementById(\"ypp" + entry + "\").playVideo()'>play</a>");
+				d.append("<a href='javascript:addvideo(\"" + e.media$group.yt$videoid.$t + "\")'>add</a>")
+				d.append("<div id='ypph" + entry + "'></div>");
+				$("#results").append(d);
+				var params = {allowScriptAccess: "always"};
+        var atts = {id: "ypp" + entry};
+        swfobject.embedSWF("http://www.youtube.com/v/" + e.media$group.yt$videoid.$t + "?enablejsapi=1&playerapiid=ypp"+entry, 
+                               "ypph"+entry, "150", "150", "8", null, null, params, atts);
+        //swfobject.embedSWF("http://www.youtube.com/apiplayer?enablejsapi=1&playerapiid=ypp"+entry, 
+        //                       "ypph"+entry, "425", "356", "8", null, null, params, atts);
+			}
+		}
+  	</script>
+  </head>
+  <body>
+    <div id="cover"></div>
+    <div id="search">
+      <div>
+  			<div><b>Search for videos:</b></div>
+  			<form>
+  				<input type="text" id="s" />
+  			</form>
+  			<div id="results"></div>
+  		</div>
+      
+    </div>
+    <div><div id="h"><h1>Remixr</h1><span><a href="javascript:what();">what?</a> <a href="javascript:void(0);" onclick="javascript:save();">save</a></span></div><div id="wh" class="exp"><p>Remixr is a way to mix different youtube tracks to create cool songs.</p><p>Think of it as a poor man's DJ.</p></div><div id="sv" class="exp"><p>Saved! If you bookmark the page right now, you'll be able to return to the current state.</p><p>You can also share the current url with your friends.</p></div></div>
+    <div style="position: fixed; top:0; right:.1em; font-size: 6em; font-weight: bold; text-align: right;"><a href="javascript:add();" style="display:block; line-height: .6em">+</a></div>
+    <div id="f"></div>
+    
+    <div id="cont"><a href="#play"><canvas id="pp" width="100px" height="100px"></canvas></a><canvas id="t" width="100px" height="100px"></canvas></div>
+  </body>
+</html>

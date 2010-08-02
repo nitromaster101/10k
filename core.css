@@ -1,6 +1,120 @@
+/* @override http://localhost:8000/core.css */
 
 .ch {
 	border: 1px solid black;
 	margin: 10px 2px;
 }
 
+#cont {
+	border: 1px solid black;
+	border-bottom: 0px;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	margin: .5em;
+	background: white;
+}
+
+//#pp {
+	border: 1px solid pink;
+}
+
+//#t {
+	border: 1px solid beige;
+}
+
+a {
+	color: black;
+	text-decoration: none;
+}
+
+a:visited {
+	color: black;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #999;
+	text-decoration: none;
+}
+
+#h {
+	font-size: 2em;
+	position: relative;
+}
+
+#h span {
+	vertical-align: text-bottom;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	margin-right: .4em;
+}
+
+#h a {
+	padding-left: 1em;
+	text-decoration: underline;
+}
+
+.exp {
+	font-size: 5em;
+	margin: 1em;
+	text-shadow: #aaa 0 3px 3px;
+	line-height: 1.05em;
+	max-width: 1000px;
+	display: none;
+}
+
+.exp p {
+	margin-bottom: 1em;
+}
+
+h1 {
+	text-shadow: rgba(255, 255, 0, 0.329) 0px 2px 0px;
+	//-webkit-text-stroke: 1px black;
+	//text-stroke: 1px black;
+	color: #000;
+	font-size: 5em;
+	opacity: .7;
+	letter-spacing: -3px;
+	line-height: 0px;
+	margin: .5em 0 0;
+	//border: 1px solid black;
+	font-family: "Helvetica, Arial, sans-serif";
+	//display: inline;
+}
+
+.v {
+	border: 1px solid black;
+	padding: 5px;
+	margin: 15px;
+	display: inline-block;
+}
+
+#cover {
+	background: black;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	z-index: 5;
+	opacity: .9;
+	//display: none;
+}
+
+#search {
+	border: 1px solid black;
+	position: fixed;
+	top: 1em;
+	bottom: 1em;
+	right: 20%;
+	left: 20%;
+	background: white;
+	color: black;
+	z-index: 6;
+	padding: 1em;
+	//font-size: 4em;
+	overflow: scroll;
+	//display: none;
+}

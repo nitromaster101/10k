@@ -30,29 +30,31 @@
 				var a = e.author[0]
 				d.append(" <span>" + a.name.$t + "</span>");
 				d.append("<a href='javascript:document.getElementById(\"ypp" + entry + "\").playVideo()'>play</a>");
+				d.append("<a href='javascript:add(\"ypp" + entry + "\")'>add</a>")
 				mapping[entry] = e.media$group.yt$videoid.$t;
-				//d.append(returnPlayer("ypp" + entry, "2vEStDd6HVY", 50, 50));
 				d.append("<div id='ypph" + entry + "'></div>");
 				$("#results").append(d);
-				var params = { allowScriptAccess: "always" };
-        var atts = { id: "ypp" + entry };
-        swfobject.embedSWF("http://www.youtube.com/apiplayer?enablejsapi=1&playerapiid=ypp"+entry, 
-                               "ypph"+entry, "425", "356", "8", null, null, params, atts);
+				var params = {allowScriptAccess: "always"};
+        var atts = {id: "ypp" + entry};
+        swfobject.embedSWF("http://www.youtube.com/v/" + e.media$group.yt$videoid.$t + "?enablejsapi=1&playerapiid=ypp"+entry, 
+                               "ypph"+entry, "150", "150", "8", null, null, params, atts);
+        //swfobject.embedSWF("http://www.youtube.com/apiplayer?enablejsapi=1&playerapiid=ypp"+entry, 
+        //                       "ypph"+entry, "425", "356", "8", null, null, params, atts);
 			}
 		}
 		function onYouTubePlayerReady(playerId) {
 			console.debug("YAY", playerId);
 			//console.debug(playerId, document.getElementById(playerId), $("#" + playerId));
-			id = playerId.split("ypp")[1]
-			document.getElementById(playerId).loadVideoById(mapping[id], 0, "small");
-			document.getElementById(playerId).pauseVideo();
+			//id = playerId.split("ypp")[1]
+			//document.getElementById(playerId).loadVideoById(mapping[id], 0, "small");
+			//document.getElementById(playerId).pauseVideo();
 		}
 		
 		$(document).ready(function() {
 			$("#search").focus();
 			$("form").submit(function(a, b) {
 				q = escape($("#search")[0].value);
-				url = "http://gdata.youtube.com/feeds/api/videos?q=" + q + "&start-index=11&max-results=10&v=2&fields=entry&alt=json-in-script&callback=go&orderby=viewCount"
+				url = "http://gdata.youtube.com/feeds/api/videos?q=" + q + "&start-index=11&max-results=1&v=2&fields=entry&alt=json-in-script&callback=go&orderby=viewCount"
 				console.debug($("#search"), q);
 				
 				$("head").append("\<script type=\"text/javascript\" src=\"" + url +"\"\>\</script\>");
@@ -63,10 +65,9 @@
 			$("form").submit();
 		});
 		
-		function returnPlayer(id, vid, w, h) {
-			//return '<object width="' + w + '" height="' + h + '" id="' + id + '"><param name="movie" value="http://www.youtube.com/v/' + vid + '&hl=en&enablejsapi=1&playerapiid=' + id + '" /><param name="allowscriptaccess" value="always" /><embed src="http://www.youtube.com/v/' + vid + '&hl=en&enablejsapi=1&playerapiid=ytp" type="application/x-shockwave-flash" allowscriptaccess="always" name="' + id + '" wmode="transparent" width="425" height="344"/></object>'
-			return '<object width="' + w + '" height="' + h + '" id="' + id + '"><param name="movie" value="http://www.youtube.com/apiplayer?enablejsapi=1&playerapiid=' + id + '" /><param name="allowscriptaccess" value="always" /><embed src="http://www.youtube.com/apiplayer?enablejsapi=1&playerapiid=' + id + '" type="application/x-shockwave-flash" allowscriptaccess="always" name="' + id + '" wmode="transparent" width="425" height="344"/></object>'
-		}
+		function add(id) {
+		  alert("addddd!" + id);
+	  }
 		
 	</script>
 </head>
